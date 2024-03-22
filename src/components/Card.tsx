@@ -1,6 +1,7 @@
 interface CardProps {
   card: string;
   value: number;
+  key: number;
 }
 
 const Card: React.FC<CardProps> = ({ card, value }) => (

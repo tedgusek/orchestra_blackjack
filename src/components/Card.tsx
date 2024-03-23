@@ -1,11 +1,11 @@
 interface CardProps {
-  card: string;
-  value: number;
   key: number;
+  img: string;
+  value: number;
 }
 
-const Card: React.FC<CardProps> = ({ card, value }) => (
-  <img src={card} alt='Card' value={value} />
+const Card: React.FC<CardProps> = ({ img }) => (
+  <img src={img} alt='Card' className='h-24' />
 );
 
 export default Card;

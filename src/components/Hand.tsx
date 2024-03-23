@@ -1,14 +1,20 @@
 import Card from './Card';
 
-interface HandProps {
-  cards: string[]; // array of card image urls.
-  values: number[]; // array of card values
+interface Card {
+  code: string;
+  image: string;
+  value: string;
+  suit: string;
 }
 
-const Hand: React.FC<HandProps> = ({ cards, values }) => (
+interface HandProps {
+  cards: Card[];
+}
+
+const Hand: React.FC<HandProps> = ({ cards }) => (
   <div>
     {cards.map((card, index) => (
-      <Card key={index} card={card} value={value} />
+      <Card key={index} img={card.image} value={parseInt(card.value)} />
     ))}
   </div>
 );

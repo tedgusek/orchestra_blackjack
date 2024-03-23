@@ -12,9 +12,14 @@ interface HandProps {
 }
 
 const Hand: React.FC<HandProps> = ({ cards }) => (
-  <div>
+  <div className='flex flex-row items-center p-4 m-4'>
     {cards.map((card, index) => (
-      <Card key={index} img={card.image} value={parseInt(card.value)} />
+      <Card
+        key={index}
+        img={card.image}
+        value={parseInt(card.value)}
+        className='m-4'
+      />
     ))}
   </div>
 );

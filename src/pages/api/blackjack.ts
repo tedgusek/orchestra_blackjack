@@ -22,6 +22,13 @@ interface DealCardResponse {
   cards: Card[];
 }
 
+interface ShuffleCardResponse {
+  success: boolean;
+  deck_id: string;
+  remaining: number;
+  shuffled: boolean;
+}
+
 export const initDeck = async (): Promise<DeckAPIResponse> => {
   try {
     const response: AxiosResponse<DeckAPIResponse> = await axios.get(
@@ -48,6 +55,21 @@ export const dealCard = async (
   }
 };
 
+// Out of Commision for now
+export const shuffleCards = async (
+  deck_id: string | null
+): Promise<ShuffleCardResponse> => {
+  try {
+    const response: AxiosResponse<ShuffleCardResponse> = await axios.get(
+      `https://deckofcardsapi.com/api/deck/${deck_id}/shuffle/`
+    );
+    console.log('deck_id 22:', deck_id);
+    return response.data;
+  } catch (error) {
+    console.log('deck_id :', deck_id);
+    console.error('Error Shuffling: ', error);
+  }
+};
 // export default async function handler(
 //   req: NextApiRequest,
 //   res: NextApiResponse<BlackjackApiResponse>

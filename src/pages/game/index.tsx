@@ -27,6 +27,9 @@ const Game = () => {
     const { deck_id } = await initDeck();
     setDeckId(deck_id);
     // console.log('deck_id: ', deck_id);
+    setHouseTotal(0);
+    setPlayerTotal(0);
+
     const initialHouseHand = await dealCard(deck_id, 2);
     // console.log('initialHouseHand: ', initialHouseHand);
     const initialPlayerHand = await dealCard(deck_id, 2);
@@ -39,6 +42,14 @@ const Game = () => {
     const playerT = handTotal(initialPlayerHand.cards);
     setHouseTotal(houseT);
     setPlayerTotal(playerT);
+    if (
+      (playerT <= 21 && playerT > houseT) ||
+      (playerT === 21 && playerT === houseT)
+    ) {
+      setTimeout(() => {
+        checkWinnerAndUpdate(playerT, houseT);
+      }, 500);
+    }
     // if (playerT > houseT) {
     //   alert('Player Wins!');
     //   router.push('/');
@@ -47,16 +58,27 @@ const Game = () => {
 
   useEffect(() => {
     startGame();
-    if (playerTotal <= 21 && playerTotal > houseTotal) {
-      alert('Player Wins!!');
-      router.push('/)');
-    }
+    // if (playerTotal <= 21 && playerTotal > houseTotal) {
+    //   alert('Player Wins!!');
+    //   router.push('/)');
+    // }
     // const winner = checkWinner(playerTotal, houseTotal);
     // if (winner === 'Player') {
     //   alert('Player Wins!!');
     //   router.push('/');
     // }
   }, []);
+
+  //   const handleStateChange = () => {
+  //     if (playerTotal <= 21 && playerTotal > houseTotal) {
+  //       setTimeout(() => {
+  //         checkWinnerAndUpdate(playerTotal, houseTotal);
+  //       }, 500);
+  //     }
+  //   };
+  //   useEffect(() => {
+  //     handleStateChange();
+  //   }, [playerTotal, houseTotal]);
 
   const hitPlayer = async () => {
     if (deck_id) {
@@ -72,6 +94,15 @@ const Game = () => {
         //   alert('Player Won!!');
         //   router.push('/');
         // }
+        if (
+          (newPlayerTotal <= 21 && newPlayerTotal > houseTotal) ||
+          (newPlayerTotal === 21 && newPlayerTotal === houseTotal) ||
+          newPlayerTotal > 21
+        ) {
+          setTimeout(() => {
+            checkWinnerAndUpdate(newPlayerTotal, houseTotal);
+          }, 500);
+        }
       } catch (error) {
         console.error('Error hitting Player : ', error);
       }
@@ -100,6 +131,16 @@ const Game = () => {
         const playerT = handTotal(initialPlayerHand.cards);
         setHouseTotal(houseT);
         setPlayerTotal(playerT);
+        // console.log('playerTotal: ', playerTotal, ' houseTotal :', houseTotal);
+        // console.log('playerT: ', playerT, ' houseT :', houseT);
+        if (
+          (playerT <= 21 && playerT > houseT) ||
+          (playerT === 21 && playerT === houseT)
+        ) {
+          setTimeout(() => {
+            checkWinnerAndUpdate(playerT, houseT);
+          }, 500);
+        }
         // checkWinnerAndUpdate(playerT, houseT);
         // if (playerT > houseT && playerT <= 21) {
         //   alert('Player Won!!');
@@ -114,20 +155,26 @@ const Game = () => {
   };
 
   const stand = (playerTotal: number, houseTotal: number) => {
-    const winner = checkWinner(playerTotal, houseTotal); // returns a string
-    if (winner === 'Player') {
-      alert('Player Wins!!');
-    } else if (winner === 'House') {
-      alert('House Wins!!');
-    }
-    router.push('/');
+    // const winner = checkWinner(playerTotal, houseTotal); // returns a string
+    // if (winner === 'Player') {
+    //   alert('Player Wins!!');
+    // } else if (winner === 'House') {
+    //   alert('House Wins!!');
+    // }
+    // // router.push('/');
+    // shuffleDeck();
+    checkWinnerAndUpdate(playerTotal, houseTotal);
   };
 
   const checkWinnerAndUpdate = (playerTotal: number, houseTotal: number) => {
     const winner = checkWinner(playerTotal, houseTotal);
     if (winner === 'Player') {
       alert('Player Wins!!');
-      router.push('/');
+      //   router.push('/');
+      shuffleDeck();
+    } else if (winner === 'House') {
+      alert('House Wins!');
+      shuffleDeck();
     }
   };
 

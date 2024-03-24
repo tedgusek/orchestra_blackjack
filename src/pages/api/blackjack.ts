@@ -34,7 +34,7 @@ export const initDeck = async (): Promise<DeckAPIResponse> => {
     const response: AxiosResponse<DeckAPIResponse> = await axios.get(
       'https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1'
     );
-    console.log('Response.data: ', response.data);
+    // console.log('Response.data: ', response.data);
     return response.data;
   } catch (error) {
     console.error('Error initializing the deck: ', error);
@@ -63,10 +63,10 @@ export const shuffleCards = async (
     const response: AxiosResponse<ShuffleCardResponse> = await axios.get(
       `https://deckofcardsapi.com/api/deck/${deck_id}/shuffle/`
     );
-    console.log('deck_id 22:', deck_id);
+    // console.log('deck_id 22:', deck_id);
     return response.data;
   } catch (error) {
-    console.log('deck_id :', deck_id);
+    // console.log('deck_id :', deck_id);
     console.error('Error Shuffling: ', error);
   }
 };

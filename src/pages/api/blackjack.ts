@@ -1,12 +1,5 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
-// import { initDeck, dealCard } from '../../utils/blackjackLogic';
 import axios, { AxiosResponse } from 'axios';
 
-// interface BlackjackApiResponse {
-//   deckId: string;
-//   playerHand: string[];
-//   houseHand: string[];
-// }
 interface DeckAPIResponse {
   deck_id: string;
 }
@@ -34,10 +27,10 @@ export const initDeck = async (): Promise<DeckAPIResponse> => {
     const response: AxiosResponse<DeckAPIResponse> = await axios.get(
       'https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1'
     );
-    // console.log('Response.data: ', response.data);
     return response.data;
   } catch (error) {
     console.error('Error initializing the deck: ', error);
+    throw error;
   }
 };
 
@@ -52,21 +45,21 @@ export const dealCard = async (
     return response.data;
   } catch (error) {
     console.error('Error dealing cards :', error);
+    throw error;
   }
 };
 
-// Out of Commision for now
 export const shuffleCards = async (
   deck_id: string | null
 ): Promise<ShuffleCardResponse> => {
+  if (!deck_id) throw new Error('Deck ID is required');
   try {
     const response: AxiosResponse<ShuffleCardResponse> = await axios.get(
       `https://deckofcardsapi.com/api/deck/${deck_id}/shuffle/`
     );
-    // console.log('deck_id 22:', deck_id);
     return response.data;
   } catch (error) {
-    // console.log('deck_id :', deck_id);
     console.error('Error Shuffling: ', error);
+    throw error;
   }
 };

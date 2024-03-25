@@ -12,10 +12,10 @@ interface Cards extends Array<Card> {}
 export const handTotal = (Cards: Cards) => {
   // initialize a variable aceCount to count the number of aces -- an array, or maybe just an incrementing number>?
   let aceCount: number = 0;
-  const jqkPattern: RegExp = /[JQG]/;
+  const jqgPattern: RegExp = /[JQG]/;
   // Iterate through the array of objects- use reduce?
   let total = Cards.reduce((acc: number, curr: Card) => {
-    if (jqkPattern.test(curr.value)) {
+    if (jqgPattern.test(curr.value)) {
       //add 10
       //   console.log('curr.val ', curr.value);
       acc += 10;

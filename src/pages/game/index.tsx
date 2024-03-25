@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import { initDeck, dealCard, shuffleCards } from '../api/blackjack'; // This needs to be built in respective folder
 import { handTotal, checkWinner } from '../../utils/blackjackLogic'; // This needs to be built in respective folder
 import Hand from '../../components/Hand';
-// import Button from '../../components/Button';
+import WinnerModal from '@/components/WinnerModal';
 
 interface Card {
   code: string;
@@ -14,71 +14,47 @@ interface Card {
 
 const Game = () => {
   const [deck_id, setDeckId] = useState<string | null>(null);
-  //   const [playerHand, setPlayerHand] = useState<DealCardResponse>();
   const [playerHand, setPlayerHand] = useState<Card[]>([]);
   const [houseHand, setHouseHand] = useState<Card[]>([]);
   const [playerTotal, setPlayerTotal] = useState<number>(0);
   const [houseTotal, setHouseTotal] = useState<number>(0);
-  //   const [gameOn, setGameOn] = useState<string>('');
+  const [winner, setWinner] = useState<string>('');
 
   const router = useRouter();
 
   const startGame = async () => {
     const { deck_id } = await initDeck();
     setDeckId(deck_id);
-    // console.log('deck_id: ', deck_id);
+
     setHouseTotal(0);
     setPlayerTotal(0);
 
     const initialHouseHand = await dealCard(deck_id, 2);
-    // console.log('initialHouseHand: ', initialHouseHand);
     const initialPlayerHand = await dealCard(deck_id, 2);
-    // console.log('initialPlayerHand: ', initialPlayerHand);
 
     setHouseHand(initialHouseHand.cards);
-    // console.log('initialHouseHand.cards : ', initialHouseHand.cards);
     setPlayerHand(initialPlayerHand.cards);
     const houseT = handTotal(initialHouseHand.cards);
     const playerT = handTotal(initialPlayerHand.cards);
     setHouseTotal(houseT);
     setPlayerTotal(playerT);
-    if (
-      (playerT <= 21 && playerT > houseT) ||
-      (playerT === 21 && playerT === houseT)
-    ) {
-      setTimeout(() => {
-        checkWinnerAndUpdate(playerT, houseT);
-      }, 500);
-    }
-    // if (playerT > houseT) {
-    //   alert('Player Wins!');
-    //   router.push('/');
+
+    // The following code snippet implements an auto check on the winner of the game
+    // however, it was not conducive to the UX
+
+    // if (
+    //   (playerT <= 21 && playerT > houseT) ||
+    //   (playerT === 21 && playerT === houseT)
+    // ) {
+    //   setTimeout(() => {
+    //     checkWinnerAndUpdate(playerT, houseT);
+    //   }, 500);
     // }
   };
 
   useEffect(() => {
     startGame();
-    // if (playerTotal <= 21 && playerTotal > houseTotal) {
-    //   alert('Player Wins!!');
-    //   router.push('/)');
-    // }
-    // const winner = checkWinner(playerTotal, houseTotal);
-    // if (winner === 'Player') {
-    //   alert('Player Wins!!');
-    //   router.push('/');
-    // }
   }, []);
-
-  //   const handleStateChange = () => {
-  //     if (playerTotal <= 21 && playerTotal > houseTotal) {
-  //       setTimeout(() => {
-  //         checkWinnerAndUpdate(playerTotal, houseTotal);
-  //       }, 500);
-  //     }
-  //   };
-  //   useEffect(() => {
-  //     handleStateChange();
-  //   }, [playerTotal, houseTotal]);
 
   const hitPlayer = async () => {
     if (deck_id) {
@@ -89,16 +65,8 @@ const Game = () => {
         const newPlayerTotal = handTotal([...playerHand, ...response.cards]);
         setPlayerHand(newPlayerHand);
         setPlayerTotal(newPlayerTotal);
-        // checkWinnerAndUpdate(newPlayerTotal, houseTotal);
-        // if (newPlayerTotal > houseTotal && newPlayerTotal <= 21) {
-        //   alert('Player Won!!');
-        //   router.push('/');
-        // }
-        if (
-          (newPlayerTotal <= 21 && newPlayerTotal > houseTotal) ||
-          (newPlayerTotal === 21 && newPlayerTotal === houseTotal) ||
-          newPlayerTotal > 21
-        ) {
+
+        if (newPlayerTotal > 21) {
           setTimeout(() => {
             checkWinnerAndUpdate(newPlayerTotal, houseTotal);
           }, 500);
@@ -118,33 +86,29 @@ const Game = () => {
         const response = await shuffleCards(deck_id);
         setHouseTotal(0);
         setPlayerTotal(0);
-        // setPlayerHand([...playerHand, ...response.cards]);
+
         const initialHouseHand = await dealCard(deck_id, 2);
-        // console.log('initialHouseHand: ', initialHouseHand);
         const initialPlayerHand = await dealCard(deck_id, 2);
-        // console.log('initialPlayerHand: ', initialPlayerHand);
 
         setHouseHand(initialHouseHand.cards);
-        // console.log('initialHouseHand.cards : ', initialHouseHand.cards);
         setPlayerHand(initialPlayerHand.cards);
         const houseT = handTotal(initialHouseHand.cards);
         const playerT = handTotal(initialPlayerHand.cards);
         setHouseTotal(houseT);
         setPlayerTotal(playerT);
-        // console.log('playerTotal: ', playerTotal, ' houseTotal :', houseTotal);
-        // console.log('playerT: ', playerT, ' houseT :', houseT);
-        if (
-          (playerT <= 21 && playerT > houseT) ||
-          (playerT === 21 && playerT === houseT)
-        ) {
-          setTimeout(() => {
-            checkWinnerAndUpdate(playerT, houseT);
-          }, 500);
-        }
-        // checkWinnerAndUpdate(playerT, houseT);
-        // if (playerT > houseT && playerT <= 21) {
-        //   alert('Player Won!!');
-        //   router.push('/');
+
+        setWinner('');
+
+        //  The following code snippet implemented an auto check for the winner
+        //  However it was not condusive to tht UX
+
+        // if (
+        //   (playerT <= 21 && playerT > houseT) ||
+        //   (playerT === 21 && playerT === houseT)
+        // ) {
+        //   setTimeout(() => {
+        //     checkWinnerAndUpdate(playerT, houseT);
+        //   }, 500);
         // }
       } catch (error) {
         console.error('Error shuffling deck : ', error);
@@ -155,27 +119,30 @@ const Game = () => {
   };
 
   const stand = (playerTotal: number, houseTotal: number) => {
-    // const winner = checkWinner(playerTotal, houseTotal); // returns a string
-    // if (winner === 'Player') {
-    //   alert('Player Wins!!');
-    // } else if (winner === 'House') {
-    //   alert('House Wins!!');
-    // }
-    // // router.push('/');
-    // shuffleDeck();
     checkWinnerAndUpdate(playerTotal, houseTotal);
   };
 
   const checkWinnerAndUpdate = (playerTotal: number, houseTotal: number) => {
     const winner = checkWinner(playerTotal, houseTotal);
-    if (winner === 'Player') {
-      alert('Player Wins!!');
-      //   router.push('/');
-      shuffleDeck();
-    } else if (winner === 'House') {
-      alert('House Wins!');
-      shuffleDeck();
-    }
+    setWinner(winner);
+    setTimeout(() => {
+      console.log('winner state is set');
+    }, 0);
+    //   if (winner === 'Player') {
+    // Change logic to produce a modal that pops up and displays winner,
+    // with options to either quit game back to main page, or to shuffle deck and play again
+    //   alert('Player Wins!!');
+    //   shuffleDeck();
+
+    // } else if (winner === 'House') {
+    //   alert('House Wins!');
+    //   shuffleDeck();
+    // }
+  };
+
+  const onExit = () => {
+    router.push('/');
+    setWinner('');
   };
 
   // Implement current score calculator
@@ -186,6 +153,9 @@ const Game = () => {
   return (
     <div className='flex flex-col items-center mt-4 text-5xl'>
       <h1 className='p-4'> Blackjack Game </h1>
+      {winner && (
+        <WinnerModal winner={winner} shuffle={shuffleDeck} onExit={onExit} />
+      )}
       <div id='ButtonDiv' className='flex flex-row items-center'>
         <button
           onClick={hitPlayer}
